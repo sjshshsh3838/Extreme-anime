@@ -1,172 +1,145 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Extreme Anime</title>
+  <title>Extreme Anime</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script type="module">
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc } 
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-<style>
-
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family:'Poppins',sans-serif;
-}
-
-body{
-  background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);
-  color:white;
-  min-height:100vh;
-}
-
-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:20px;
-  background:rgba(0,0,0,0.5);
-  backdrop-filter:blur(10px);
-  position:sticky;
-  top:0;
-}
-
-.logo{
-  font-size:26px;
-  font-weight:700;
-  background:linear-gradient(90deg,#ffcc00,#ff6600);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-}
-
-header a{
-  color:white;
-  text-decoration:none;
-  font-weight:600;
-}
-
-.container{
-  padding:20px;
-}
-
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
-  gap:20px;
-}
-
-.card{
-  background:rgba(255,255,255,0.05);
-  backdrop-filter:blur(15px);
-  border-radius:20px;
-  padding:15px;
-  transition:0.3s;
-  box-shadow:0 0 20px rgba(0,0,0,0.3);
-}
-
-.card:hover{
-  transform:translateY(-8px);
-  box-shadow:0 0 25px rgba(255,204,0,0.4);
-}
-
-.card img{
-  width:100%;
-  border-radius:15px;
-  height:300px;
-  object-fit:cover;
-}
-
-.card h3{
-  margin-top:10px;
-  font-weight:600;
-}
-
-select{
-  width:100%;
-  padding:10px;
-  border-radius:10px;
-  margin-top:10px;
-  border:none;
-  background:#111;
-  color:white;
-}
-
-iframe{
-  width:100%;
-  height:200px;
-  border-radius:15px;
-  margin-top:10px;
-  border:none;
-}
-
-</style>
-</head>
-
-<body>
-
-<header>
-  <div class="logo">Extreme Anime</div>
-  <a href="admin.html">Admin</a>
-</header>
-
-<div class="container">
-  <h2 style="margin-bottom:20px;">Latest Anime</h2>
-  <div class="grid" id="animeList"></div>
-</div>
-
-<script type="module">
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-
+// 🔥 তোমার Firebase Config
 const firebaseConfig = {
-  apiKey: "YOUR_KEY",
-  authDomain: "YOUR_DOMAIN",
-  databaseURL: "YOUR_DB_URL",
-  projectId: "YOUR_PROJECT",
-  storageBucket: "YOUR_BUCKET",
-  messagingSenderId: "YOUR_ID",
-  appId: "YOUR_APPID"
+  apiKey: "AIzaSyC_hLvrqWjOMkuYxLv3nYz2w_3K6-te5l8",
+  authDomain: "sohan-b3d3e.firebaseapp.com",
+  projectId: "sohan-b3d3e",
+  storageBucket: "sohan-b3d3e.firebasestorage.app",
+  messagingSenderId: "30321240527",
+  appId: "1:30321240527:web:ff4e862bb31f1a8bcb8aba"
 };
 
 const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
+const db = getFirestore(app);
 
-const animeList = document.getElementById("animeList");
+// 🔐 Admin Password
+const ADMIN_PASS = "1234";
 
-onValue(ref(db,"anime/"), snapshot=>{
-  animeList.innerHTML="";
-  snapshot.forEach(child=>{
-    const data=child.val();
+// 🔑 Login
+window.loginAdmin = function() {
+  const pass = document.getElementById("adminPass").value;
+  if(pass === ADMIN_PASS){
+    document.getElementById("adminPanel").style.display="block";
+    alert("Admin Login Success");
+  } else {
+    alert("Wrong Password");
+  }
+}
 
-    let episodes="";
-    if(data.episodes){
-      Object.keys(data.episodes).forEach(ep=>{
-        episodes+=`<option value="${data.episodes[ep]}">${ep}</option>`;
-      });
-    }
+// ➕ Add Episode
+window.addEpisode = async function(){
+  const anime = document.getElementById("animeName").value;
+  const ep = document.getElementById("epNumber").value;
+  const link = document.getElementById("videoLink").value;
 
-    animeList.innerHTML+=`
+  await addDoc(collection(db,"episodes"),{
+    anime: anime,
+    episode: ep,
+    video: link
+  });
+
+  alert("Episode Added");
+  loadEpisodes();
+}
+
+// 📥 Load Episodes
+async function loadEpisodes(){
+  const querySnapshot = await getDocs(collection(db,"episodes"));
+  const container = document.getElementById("episodeList");
+  container.innerHTML="";
+  querySnapshot.forEach((docSnap)=>{
+    const data = docSnap.data();
+    container.innerHTML += `
       <div class="card">
-        <img src="${data.image}">
-        <h3>${data.title}</h3>
-        <select onchange="playVideo(this)">
-          <option>Select Episode</option>
-          ${episodes}
-        </select>
-        <iframe></iframe>
+        <h3>${data.anime} - EP ${data.episode}</h3>
+        <a href="${data.video}" target="_blank">Watch</a>
+        <br>
+        <button onclick="deleteEpisode('${docSnap.id}')">Delete</button>
+        <button onclick="editEpisode('${docSnap.id}','${data.episode}')">Edit</button>
       </div>
     `;
   });
-});
+}
+window.onload = loadEpisodes;
 
-window.playVideo=function(select){
-  const iframe=select.parentElement.querySelector("iframe");
-  iframe.src=select.value;
+// ❌ Delete
+window.deleteEpisode = async function(id){
+  await deleteDoc(doc(db,"episodes",id));
+  alert("Deleted");
+  loadEpisodes();
 }
 
-</script>
+// ✏️ Edit
+window.editEpisode = async function(id,oldEp){
+  const newEp = prompt("New Episode Number:", oldEp);
+  await updateDoc(doc(db,"episodes",id),{
+    episode:newEp
+  });
+  alert("Updated");
+  loadEpisodes();
+}
+
+  </script>
+
+<style>
+body{
+  background:#0f0f1a;
+  color:white;
+  font-family:sans-serif;
+}
+h1{
+  text-align:center;
+  color:#ff2e63;
+}
+.card{
+  background:#1c1c2e;
+  padding:15px;
+  margin:10px;
+  border-radius:10px;
+}
+button{
+  background:#ff2e63;
+  border:none;
+  padding:6px 10px;
+  color:white;
+  border-radius:5px;
+  margin-top:5px;
+}
+input{
+  padding:8px;
+  margin:5px;
+}
+</style>
+
+</head>
+<body>
+
+<h1>🔥 Extreme Anime 🔥</h1>
+
+<h2>Admin Login</h2>
+<input type="password" id="adminPass" placeholder="Enter Password">
+<button onclick="loginAdmin()">Login</button>
+
+<div id="adminPanel" style="display:none;">
+<h2>Add Episode</h2>
+<input id="animeName" placeholder="Anime Name"><br>
+<input id="epNumber" placeholder="Episode Number"><br>
+<input id="videoLink" placeholder="Video Link"><br>
+<button onclick="addEpisode()">Add Episode</button>
+</div>
+
+<h2>All Episodes</h2>
+<div id="episodeList"></div>
 
 </body>
 </html>
