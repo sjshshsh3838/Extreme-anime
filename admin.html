@@ -1,51 +1,77 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel</title>
 </head>
+
 <body style="background:black;color:white;font-family:sans-serif">
 
 <h2>Admin Login</h2>
+
 <input type="password" id="pass" placeholder="Password">
 <button onclick="login()">Login</button>
 
-<div id="panel" style="display:none">
-<h3>Add Anime</h3>
-<input id="title" placeholder="Anime Title"><br>
-<input id="image" placeholder="Thumbnail Link"><br>
-<button onclick="addAnime()">Add Anime</button>
+<div id="panel" style="display:none;margin-top:20px">
+  <h3>Add Anime</h3>
+  <input id="title" placeholder="Anime Title"><br><br>
+  <input id="image" placeholder="Thumbnail Image Link"><br><br>
+  <button onclick="addAnime()">Add Anime</button>
 </div>
 
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
+// 🔥 Firebase Import
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+// 🔥 তোমার Firebase Config
 const firebaseConfig = {
-  apiKey: "YOUR_KEY",
-  authDomain: "YOUR_AUTH",
-  databaseURL: "YOUR_DB_URL",
-  projectId: "YOUR_ID",
-  storageBucket: "YOUR_BUCKET",
-  messagingSenderId: "YOUR_MSG",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyC_hLvrqWjOMkuYxLv3nYz2w_3K6-te5l8",
+  authDomain: "sohan-b3d3e.firebaseapp.com",
+  projectId: "sohan-b3d3e",
+  storageBucket: "sohan-b3d3e.firebasestorage.app",
+  messagingSenderId: "30321240527",
+  appId: "1:30321240527:web:ff4e862bb31f1a8bcb8aba"
 };
 
+// 🔥 Firebase Start
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-window.login=function(){
-if(document.getElementById("pass").value==="1234"){
-document.getElementById("panel").style.display="block";
-}
+// 🔐 Admin Password
+window.login = function() {
+  const password = document.getElementById("pass").value;
+
+  if (password === "sohan786") {
+    document.getElementById("panel").style.display = "block";
+    alert("Login Success ✅");
+  } else {
+    alert("Wrong Password ❌");
+  }
 }
 
-window.addAnime=function(){
-const title=document.getElementById("title").value;
-const image=document.getElementById("image").value;
-push(ref(db,"anime"),{title,image});
-alert("Anime Added");
+// ➕ Add Anime
+window.addAnime = function() {
+  const title = document.getElementById("title").value;
+  const image = document.getElementById("image").value;
+
+  if(title === "" || image === "") {
+    alert("Fill all fields!");
+    return;
+  }
+
+  push(ref(db, "anime/"), {
+    title: title,
+    image: image
+  });
+
+  alert("Anime Added Successfully 🔥");
+
+  document.getElementById("title").value = "";
+  document.getElementById("image").value = "";
 }
+
 </script>
 
 </body>
