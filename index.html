@@ -6,98 +6,100 @@
 
 <style>
 body{
-    margin:0;
-    font-family:Arial, sans-serif;
-    background:#111;
-    color:white;
+margin:0;
+font-family:Arial, sans-serif;
+background:#0f0f0f;
+color:white;
 }
 
 header{
-    background:#000;
-    padding:15px;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
+background:black;
+padding:15px;
+display:flex;
+justify-content:space-between;
+align-items:center;
 }
 
 .logo{
-    color:#ff3c00;
-    font-size:22px;
-    font-weight:bold;
+color:#ff3c00;
+font-size:22px;
+font-weight:bold;
 }
 
 #searchInput{
-    padding:8px;
-    border:none;
-    border-radius:5px;
+padding:8px;
+border:none;
+border-radius:6px;
 }
 
 .container{
-    display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
-    gap:15px;
-    padding:15px;
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+gap:15px;
+padding:15px;
 }
 
 .anime-card{
-    background:#1c1c1c;
-    border-radius:10px;
-    overflow:hidden;
-    transition:0.3s;
+background:#1c1c1c;
+border-radius:12px;
+overflow:hidden;
+transition:0.3s;
 }
 
 .anime-card:hover{
-    transform:scale(1.05);
+transform:scale(1.05);
 }
 
 .anime-card img{
-    width:100%;
-    height:220px;
-    object-fit:cover;
+width:100%;
+height:220px;
+object-fit:cover;
 }
 
 .anime-card h3{
-    text-align:center;
-    padding:8px;
+text-align:center;
+padding:8px;
+margin:0;
 }
 
 .episodes{
-    padding:10px;
-    display:flex;
-    flex-direction:column;
-    gap:5px;
+padding:10px;
+display:flex;
+flex-direction:column;
+gap:6px;
 }
 
 .episodes button{
-    padding:6px;
-    background:#ff3c00;
-    border:none;
-    color:white;
-    border-radius:5px;
-    cursor:pointer;
+padding:7px;
+background:#ff3c00;
+border:none;
+color:white;
+border-radius:6px;
+cursor:pointer;
 }
 
 #player{
-    display:none;
-    position:fixed;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    background:black;
-    justify-content:center;
-    align-items:center;
-    flex-direction:column;
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:black;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+z-index:1000;
 }
 
 #player button{
-    padding:10px;
-    margin-bottom:10px;
+padding:10px;
+margin-bottom:10px;
 }
 
 iframe{
-    width:90%;
-    height:400px;
+width:90%;
+height:400px;
 }
 </style>
 </head>
@@ -111,9 +113,8 @@ iframe{
 
 <div class="container">
 
-<!-- Naruto -->
 <div class="anime-card">
-<img src="https://upload.wikimedia.org/wikipedia/en/9/94/NarutoCoverTankobon1.jpg">
+<img src="https://i.imgur.com/2yaf2wb.jpg">
 <h3>Naruto</h3>
 <div class="episodes">
 <button onclick="openVideo('https://www.youtube.com/embed/dQw4w9WgXcQ')">Episode 1</button>
@@ -121,9 +122,8 @@ iframe{
 </div>
 </div>
 
-<!-- One Piece -->
 <div class="anime-card">
-<img src="https://upload.wikimedia.org/wikipedia/en/6/6f/One_Piece_Logo.svg">
+<img src="https://i.imgur.com/4AIb5oP.jpg">
 <h3>One Piece</h3>
 <div class="episodes">
 <button onclick="openVideo('https://www.youtube.com/embed/dQw4w9WgXcQ')">Episode 1</button>
@@ -131,9 +131,8 @@ iframe{
 </div>
 </div>
 
-<!-- Attack on Titan -->
 <div class="anime-card">
-<img src="https://upload.wikimedia.org/wikipedia/en/7/7a/Attack_on_Titan_cover.jpg">
+<img src="https://i.imgur.com/kG6sX4Y.jpg">
 <h3>Attack on Titan</h3>
 <div class="episodes">
 <button onclick="openVideo('https://www.youtube.com/embed/dQw4w9WgXcQ')">Episode 1</button>
@@ -143,7 +142,6 @@ iframe{
 
 </div>
 
-<!-- Video Player -->
 <div id="player">
 <button onclick="closePlayer()">Close</button>
 <iframe id="videoFrame" frameborder="0" allowfullscreen></iframe>
@@ -160,48 +158,46 @@ iframe{
 
 <script>
 function openVideo(video){
-    document.getElementById("player").style.display="flex";
-    document.getElementById("videoFrame").src=video;
+document.getElementById("player").style.display="flex";
+document.getElementById("videoFrame").src=video;
 }
 
 function closePlayer(){
-    document.getElementById("player").style.display="none";
-    document.getElementById("videoFrame").src="";
+document.getElementById("player").style.display="none";
+document.getElementById("videoFrame").src="";
 }
 
-const searchInput = document.getElementById("searchInput");
-const animeCards = document.querySelectorAll(".anime-card");
-
-searchInput.addEventListener("keyup", function(){
-    const value = this.value.toLowerCase();
-    document.querySelectorAll(".anime-card").forEach(function(card){
-        const title = card.querySelector("h3").innerText.toLowerCase();
-        if(title.includes(value)){
-            card.style.display="block";
-        } else{
-            card.style.display="none";
-        }
-    });
+document.getElementById("searchInput").addEventListener("keyup", function(){
+let value = this.value.toLowerCase();
+document.querySelectorAll(".anime-card").forEach(function(card){
+let title = card.querySelector("h3").innerText.toLowerCase();
+card.style.display = title.includes(value) ? "block" : "none";
+});
 });
 
 function addAnime(){
-    const name = document.getElementById("animeName").value;
-    const image = document.getElementById("animeImage").value;
+let name = document.getElementById("animeName").value;
+let image = document.getElementById("animeImage").value;
 
-    const container = document.querySelector(".container");
+if(name === "" || image === "") return;
 
-    const card = document.createElement("div");
-    card.className="anime-card";
+let container = document.querySelector(".container");
 
-    card.innerHTML = `
-    <img src="${image}">
-    <h3>${name}</h3>
-    <div class="episodes">
-    <button onclick="openVideo('https://www.youtube.com/embed/dQw4w9WgXcQ')">Episode 1</button>
-    </div>
-    `;
+let card = document.createElement("div");
+card.className="anime-card";
 
-    container.appendChild(card);
+card.innerHTML = `
+<img src="${image}">
+<h3>${name}</h3>
+<div class="episodes">
+<button onclick="openVideo('https://www.youtube.com/embed/dQw4w9WgXcQ')">Episode 1</button>
+</div>
+`;
+
+container.appendChild(card);
+
+document.getElementById("animeName").value="";
+document.getElementById("animeImage").value="";
 }
 </script>
 
