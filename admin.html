@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin</title>
+</head>
+<body style="background:black;color:white;font-family:sans-serif">
+
+<h2>Admin Login</h2>
+<input type="password" id="pass" placeholder="Password">
+<button onclick="login()">Login</button>
+
+<div id="panel" style="display:none">
+<h3>Add Anime</h3>
+<input id="title" placeholder="Anime Title"><br>
+<input id="image" placeholder="Thumbnail Link"><br>
+<button onclick="addAnime()">Add Anime</button>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "YOUR_KEY",
+  authDomain: "YOUR_AUTH",
+  databaseURL: "YOUR_DB_URL",
+  projectId: "YOUR_ID",
+  storageBucket: "YOUR_BUCKET",
+  messagingSenderId: "YOUR_MSG",
+  appId: "YOUR_APP_ID"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+window.login=function(){
+if(document.getElementById("pass").value==="1234"){
+document.getElementById("panel").style.display="block";
+}
+}
+
+window.addAnime=function(){
+const title=document.getElementById("title").value;
+const image=document.getElementById("image").value;
+push(ref(db,"anime"),{title,image});
+alert("Anime Added");
+}
+</script>
+
+</body>
+</html>
