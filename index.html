@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Premium Anime Website</title>
+<title>Premium Anime Admin</title>
 
 <style>
 body{
@@ -19,29 +19,12 @@ header{
   font-size:22px;
   font-weight:bold;
 }
-.container{
-  padding:15px;
-}
+.container{padding:15px;}
 .card{
   background:#1e293b;
   padding:15px;
-  margin-bottom:15px;
+  margin-bottom:20px;
   border-radius:15px;
-  box-shadow:0 0 10px rgba(0,0,0,0.5);
-}
-button{
-  padding:8px 12px;
-  border:none;
-  border-radius:8px;
-  cursor:pointer;
-  margin-top:5px;
-}
-.addBtn{background:#22c55e;color:white;}
-.deleteBtn{background:#ef4444;color:white;}
-select{
-  padding:6px;
-  border-radius:6px;
-  margin-top:5px;
 }
 input{
   width:100%;
@@ -50,24 +33,39 @@ input{
   border-radius:8px;
   border:none;
 }
+button{
+  padding:7px 12px;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  margin-top:5px;
+}
+.addBtn{background:#22c55e;color:white;}
+.deleteBtn{background:#ef4444;color:white;}
+.epBtn{background:#3b82f6;color:white;}
+select{
+  width:100%;
+  padding:6px;
+  border-radius:6px;
+  margin-top:8px;
+}
 iframe{
   width:100%;
   height:200px;
-  border-radius:10px;
   margin-top:10px;
+  border-radius:10px;
 }
 </style>
 </head>
 
 <body>
 
-<header>🔥 Premium Anime Website</header>
+<header>🔥 Premium Anime Admin Panel</header>
 
 <div class="container">
 
-<h3>Add Anime</h3>
+<h3>Add New Anime</h3>
 <input type="text" id="title" placeholder="Anime Title">
-<input type="text" id="episodes" placeholder="Episode Links (comma separated)">
 <button class="addBtn" onclick="addAnime()">Add Anime</button>
 
 <hr>
@@ -79,7 +77,7 @@ iframe{
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc }
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc }
 from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -92,23 +90,15 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 window.addAnime = async function(){
-
   let title=document.getElementById("title").value;
-  let episodes=document.getElementById("episodes").value.split(",");
-
-  if(title=="" || episodes==""){
-    alert("Fill all fields");
-    return;
-  }
+  if(title==""){ alert("Enter title"); return; }
 
   await addDoc(collection(db,"anime"),{
     title:title,
-    episodes:episodes
+    episodes:[]
   });
 
   document.getElementById("title").value="";
-  document.getElementById("episodes").value="";
-
   loadAnime();
 }
 
@@ -124,29 +114,57 @@ async function loadAnime(){
     let div=document.createElement("div");
     div.className="card";
 
-    let episodeOptions="";
-    data.episodes.forEach((ep,index)=>{
-      episodeOptions+=`<option value="${ep}">Episode ${index+1}</option>`;
-    });
+    let options="";
+    if(data.episodes){
+      data.episodes.forEach((ep,i)=>{
+        options+=`<option value="${ep}">Episode ${i+1}</option>`;
+      });
+    }
 
     div.innerHTML=`
       <h3>${data.title}</h3>
-      <select onchange="playEpisode(this.value)">
+
+      <input type="text" placeholder="New Episode Link" id="ep-${id}">
+      <button class="epBtn" onclick="addEpisode('${id}')">Add Episode</button>
+
+      <select onchange="playEpisode(this)">
         <option>Select Episode</option>
-        ${episodeOptions}
+        ${options}
       </select>
+
       <iframe></iframe>
       <br>
-      <button class="deleteBtn" onclick="deleteAnime('${id}')">Delete</button>
+      <button class="deleteBtn" onclick="deleteAnime('${id}')">Delete Anime</button>
     `;
 
     container.appendChild(div);
   });
 }
 
-window.playEpisode=function(link){
-  let iframe=event.target.parentElement.querySelector("iframe");
-  iframe.src=link;
+window.addEpisode = async function(id){
+  let input=document.getElementById("ep-"+id);
+  let link=input.value;
+  if(link==""){ alert("Enter episode link"); return; }
+
+  const querySnapshot=await getDocs(collection(db,"anime"));
+  querySnapshot.forEach(async docSnap=>{
+    if(docSnap.id==id){
+      let data=docSnap.data();
+      let episodes=data.episodes || [];
+      episodes.push(link);
+      await updateDoc(doc(db,"anime",id),{
+        episodes:episodes
+      });
+    }
+  });
+
+  input.value="";
+  loadAnime();
+}
+
+window.playEpisode=function(select){
+  let iframe=select.parentElement.querySelector("iframe");
+  iframe.src=select.value;
 }
 
 window.deleteAnime=async function(id){
