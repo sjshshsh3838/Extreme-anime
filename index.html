@@ -1,4 +1,4 @@
-import { const ADMIN_PASSWORD = "sohan123";
+import {
   getDatabase, ref, push, onValue, remove, update 
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
@@ -49,5 +49,6 @@ window.editEpisode = function(id){
     title: newTitle,
     number: newNumber,
     video: newVideo
+const ADMIN_PASSWORD = "sohan123";
   });
 }
