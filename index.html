@@ -1,35 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Extreme Anime</title>
+
+<style>
+body{
+  margin:0;
+  background:#0f0f0f;
+  font-family:sans-serif;
+  color:white;
+}
+header{
+  display:flex;
+  justify-content:space-between;
+  padding:15px;
+  background:#000;
+}
+.logo{
+  color:#ffcc00;
+  font-size:22px;
+  font-weight:bold;
+}
+a{
+  color:white;
+  text-decoration:none;
+}
+.container{
+  padding:15px;
+}
+.card{
+  background:#1a1a1a;
+  border-radius:12px;
+  padding:10px;
+  margin-bottom:15px;
+}
+.card img{
+  width:100%;
+  border-radius:10px;
+}
+button{
+  padding:8px 15px;
+  border:none;
+  border-radius:8px;
+  background:#ffcc00;
+  font-weight:bold;
+  margin-top:5px;
+}
+select{
+  width:100%;
+  padding:8px;
+  border-radius:6px;
+  margin-top:5px;
+}
+iframe{
+  width:100%;
+  height:220px;
+  margin-top:10px;
+  border-radius:10px;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">Extreme Anime</div>
+  <a href="admin.html">Admin</a>
+</header>
+
+<div class="container">
+<h2>Latest Anime</h2>
+<div id="animeList"></div>
+</div>
+
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyC_hLvrqWjOMkuYxLv3nYz2w_3K6-te5l8",
-  authDomain: "sohan-b3d3e.firebaseapp.com",
-  databaseURL: "https://sohan-b3d3e-default-rtdb.firebaseio.com",
-  projectId: "sohan-b3d3e",
-  storageBucket: "sohan-b3d3e.firebasestorage.app",
-  messagingSenderId: "30321240527",
-  appId: "1:30321240527:web:ff4e862bb31f1a8bcb8aba"
+  apiKey: "YOUR_KEY",
+  authDomain: "YOUR_DOMAIN",
+  databaseURL: "YOUR_DB_URL",
+  projectId: "YOUR_PROJECT",
+  storageBucket: "YOUR_BUCKET",
+  messagingSenderId: "YOUR_ID",
+  appId: "YOUR_APPID"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-const animeContainer = document.getElementById("animeList");
+const animeList = document.getElementById("animeList");
 
-onValue(ref(db, "anime/"), (snapshot) => {
-  animeContainer.innerHTML = "";
-  snapshot.forEach(child => {
+onValue(ref(db,"anime/"), snapshot=>{
+  animeList.innerHTML="";
+  snapshot.forEach(child=>{
     const data = child.val();
+    const key = child.key;
 
-    animeContainer.innerHTML += `
-      <div style="background:#1a1a1a;margin:15px;padding:15px;border-radius:10px">
-        <img src="${data.image}" width="100%" style="border-radius:10px">
+    let epOptions="";
+    if(data.episodes){
+      Object.keys(data.episodes).forEach(ep=>{
+        epOptions+=`<option value="${data.episodes[ep]}">${ep}</option>`;
+      });
+    }
+
+    animeList.innerHTML+=`
+      <div class="card">
+        <img src="${data.image}">
         <h3>${data.title}</h3>
+
+        <select onchange="playVideo(this)">
+          <option>Select Episode</option>
+          ${epOptions}
+        </select>
+
+        <iframe></iframe>
       </div>
     `;
   });
 });
 
+window.playVideo = function(select){
+  const iframe = select.parentElement.querySelector("iframe");
+  iframe.src = select.value;
+}
+
 </script>
+
+</body>
+</html>
