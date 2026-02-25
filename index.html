@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Extreme Anime</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body{
+margin:0;
+background:#0f0f0f;
+color:white;
+font-family:Arial;
+}
+header{
+background:#141414;
+padding:15px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+.logo{
+color:#ff3c00;
+font-size:20px;
+font-weight:bold;
+}
+input{
+padding:6px;
+border:none;
+border-radius:5px;
+}
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+gap:15px;
+padding:15px;
+}
+.card{
+background:#1c1c1c;
+border-radius:10px;
+overflow:hidden;
+transition:0.3s;
+cursor:pointer;
+}
+.card:hover{
+transform:scale(1.05);
+}
+.card img{
+width:100%;
+}
+.card h3{
+padding:8px;
+font-size:14px;
+}
+.player{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:black;
+display:none;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+}
+.player iframe{
+width:95%;
+height:60%;
+}
+.close{
+margin-top:10px;
+padding:8px 15px;
+background:red;
+border:none;
+color:white;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<div class="logo">🔥 Extreme Anime</div>
+<input type="text" placeholder="Search...">
+</header>
+
+<div class="grid" id="animeList"></div>
+
+<div class="player" id="player">
+<iframe id="videoFrame" frameborder="0" allowfullscreen></iframe>
+<button class="close" onclick="closePlayer()">Close</button>
+</div>
+
+<script>
+const animeData = [
+{
+title:"Naruto",
+image:"https://via.placeholder.com/300x400",
+video:"https://www.youtube.com/embed/dQw4w9WgXcQ"
+},
+{
+title:"Attack on Titan",
+image:"https://via.placeholder.com/300x400",
+video:"https://www.youtube.com/embed/dQw4w9WgXcQ"
+},
+{
+title:"Demon Slayer",
+image:"https://via.placeholder.com/300x400",
+video:"https://www.youtube.com/embed/dQw4w9WgXcQ"
+}
+];
+
+const container = document.getElementById("animeList");
+
+animeData.forEach(anime=>{
+container.innerHTML += `
+<div class="card" onclick="openPlayer('${anime.video}')">
+<img src="${anime.image}">
+<h3>${anime.title}</h3>
+</div>
+`;
+});
+
+function openPlayer(video){
+document.getElementById("player").style.display="flex";
+document.getElementById("videoFrame").src=video;
+}
+
+function closePlayer(){
+document.getElementById("player").style.display="none";
+document.getElementById("videoFrame").src="";
+}
+</script>
+
+</body>
+</html>
