@@ -1,18 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Anime Admin</title>
+</head>
+<body>
+
+<h2>Add Episode</h2>
+
+<input id="epNumber" placeholder="Episode Number"><br><br>
+<input id="epTitle" placeholder="Episode Title"><br><br>
+<input id="epVideo" placeholder="Video Link"><br><br>
+<button onclick="addEpisode()">Add Episode</button>
+
+<h3>Episodes</h3>
+<div id="episodeList"></div>
+
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { 
-  getDatabase, ref, push, onValue, remove, update 
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
 const firebaseConfig = {
-  apiKey: "YOUR_KEY",
-  authDomain: "YOUR_AUTH",
-  databaseURL: "https://YOUR_PROJECT.firebaseio.com",
-  projectId: "YOUR_ID",
-  storageBucket: "YOUR_BUCKET",
-  messagingSenderId: "YOUR_MSG_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "PASTE_YOUR_KEY",
+  authDomain: "PASTE_YOUR_AUTH",
+  databaseURL: "PASTE_YOUR_DB_URL",
+  projectId: "PASTE_YOUR_ID",
+  storageBucket: "PASTE_YOUR_BUCKET",
+  messagingSenderId: "PASTE_YOUR_MSG",
+  appId: "PASTE_YOUR_APP_ID"
 };
 
 const app = initializeApp(firebaseConfig);
@@ -25,7 +40,7 @@ window.addEpisode = function() {
   const video = document.getElementById("epVideo").value;
 
   push(epRef, { number, title, video });
-  alert("Episode Added!");
+  alert("Added!");
 }
 
 onValue(epRef, (snapshot) => {
@@ -33,31 +48,14 @@ onValue(epRef, (snapshot) => {
   const container = document.getElementById("episodeList");
   container.innerHTML = "";
 
-  for (let id in data) {
-    container.innerHTML += `
-      <div>
-        EP ${data[id].number} - ${data[id].title}
-        <button onclick="editEpisode('${id}')">Edit</button>
-        <button onclick="deleteEpisode('${id}')">Delete</button>
-      </div>
-    `;
+  if(data){
+    for (let id in data) {
+      container.innerHTML += `<p>EP ${data[id].number} - ${data[id].title}</p>`;
+    }
   }
 });
 
-window.deleteEpisode = function(id){
-  remove(ref(db, "episodes/" + id));
-}
+</script>
 
-window.editEpisode = function(id){
-  const newTitle = prompt("New Title:");
-  const newNumber = prompt("New Number:");
-  const newVideo = prompt("New Video:");
-
-  update(ref(db, "episodes/" + id), {
-    title: newTitle,
-    number: newNumber,
-    video: newVideo
-  });
-}
-
-         </script>
+</body>
+</html>
