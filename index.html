@@ -34,7 +34,7 @@ border-radius:6px;
 
 .container{
 display:grid;
-grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+grid-template-columns:repeat(auto-fill,minmax(170px,1fr));
 gap:15px;
 padding:15px;
 }
@@ -43,6 +43,7 @@ padding:15px;
 background:#1c1c1c;
 border-radius:12px;
 overflow:hidden;
+padding-bottom:10px;
 transition:0.3s;
 }
 
@@ -52,30 +53,22 @@ transform:scale(1.05);
 
 .anime-card img{
 width:100%;
-height:220px;
+height:230px;
 object-fit:cover;
 }
 
 .anime-card h3{
 text-align:center;
-padding:8px;
-margin:0;
+margin:8px 0;
 }
 
-.episodes{
-padding:10px;
-display:flex;
-flex-direction:column;
-gap:6px;
-}
-
-.episodes button{
-padding:7px;
-background:#ff3c00;
-border:none;
-color:white;
+select{
+width:90%;
+margin:5px auto;
+display:block;
+padding:6px;
 border-radius:6px;
-cursor:pointer;
+border:none;
 }
 
 #player{
@@ -101,6 +94,24 @@ iframe{
 width:90%;
 height:400px;
 }
+.admin{
+text-align:center;
+padding:20px;
+}
+.admin input{
+padding:6px;
+margin:5px;
+border-radius:6px;
+border:none;
+}
+.admin button{
+padding:6px 12px;
+background:#ff3c00;
+border:none;
+color:white;
+border-radius:6px;
+cursor:pointer;
+}
 </style>
 </head>
 
@@ -113,44 +124,61 @@ height:400px;
 
 <div class="container">
 
+<!-- Naruto -->
 <div class="anime-card">
-<img src="https://i.imgur.com/2yaf2wb.jpg">
+<img src="https://doubtful-lavender-j29a6socv3.edgeone.app/MV5BZTNjOWI0ZTAtOGY1OS00ZGU0LWEyOWYtMjhkYjdlYmVjMDk2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg">
 <h3>Naruto</h3>
-<div class="episodes">
-<button onclick="openVideo('https://www.youtube.com/embed/dQw4w9WgXcQ')">Episode 1</button>
-<button onclick="openVideo('https://www.youtube.com/embed/dQw4w9WgXcQ')">Episode 2</button>
-</div>
+
+<select onchange="openVideo(this.value)">
+<option value="">Season 1</option>
+<option value="https://www.youtube.com/embed/dQw4w9WgXcQ">Episode 1</option>
+<option value="https://www.youtube.com/embed/dQw4w9WgXcQ">Episode 2</option>
+<option value="https://www.youtube.com/embed/dQw4w9WgXcQ">Episode 3</option>
+</select>
+
+<select onchange="openVideo(this.value)">
+<option value="">Season 2</option>
+<option value="https://www.youtube.com/embed/dQw4w9WgXcQ">Episode 1</option>
+<option value="https://www.youtube.com/embed/dQw4w9WgXcQ">Episode 2</option>
+</select>
 </div>
 
+<!-- One Piece -->
 <div class="anime-card">
 <img src="https://i.imgur.com/4AIb5oP.jpg">
 <h3>One Piece</h3>
-<div class="episodes">
-<button onclick="openVideo('https://www.youtube.com/embed/dQw4w9WgXcQ')">Episode 1</button>
-<button onclick="openVideo('https://www.youtube.com/embed/dQw4w9WgXcQ')">Episode 2</button>
-</div>
+
+<select onchange="openVideo(this.value)">
+<option value="">Season 1</option>
+<option value="https://www.youtube.com/embed/dQw4w9WgXcQ">Episode 1</option>
+<option value="https://www.youtube.com/embed/dQw4w9WgXcQ">Episode 2</option>
+</select>
 </div>
 
+<!-- Attack on Titan -->
 <div class="anime-card">
 <img src="https://i.imgur.com/kG6sX4Y.jpg">
 <h3>Attack on Titan</h3>
-<div class="episodes">
-<button onclick="openVideo('https://www.youtube.com/embed/dQw4w9WgXcQ')">Episode 1</button>
-<button onclick="openVideo('https://www.youtube.com/embed/dQw4w9WgXcQ')">Episode 2</button>
-</div>
+
+<select onchange="openVideo(this.value)">
+<option value="">Season 1</option>
+<option value="https://www.youtube.com/embed/dQw4w9WgXcQ">Episode 1</option>
+<option value="https://www.youtube.com/embed/dQw4w9WgXcQ">Episode 2</option>
+</select>
 </div>
 
 </div>
 
+<!-- Video Player -->
 <div id="player">
 <button onclick="closePlayer()">Close</button>
 <iframe id="videoFrame" frameborder="0" allowfullscreen></iframe>
 </div>
 
 <hr>
-<h2 style="text-align:center;">Admin Panel</h2>
 
-<div style="text-align:center; padding:15px;">
+<div class="admin">
+<h2>Admin Panel</h2>
 <input type="text" id="animeName" placeholder="Anime Name">
 <input type="text" id="animeImage" placeholder="Image URL">
 <button onclick="addAnime()">Add Anime</button>
@@ -158,6 +186,7 @@ height:400px;
 
 <script>
 function openVideo(video){
+if(video==="") return;
 document.getElementById("player").style.display="flex";
 document.getElementById("videoFrame").src=video;
 }
@@ -178,20 +207,19 @@ card.style.display = title.includes(value) ? "block" : "none";
 function addAnime(){
 let name = document.getElementById("animeName").value;
 let image = document.getElementById("animeImage").value;
-
-if(name === "" || image === "") return;
+if(name==="" || image==="") return;
 
 let container = document.querySelector(".container");
-
 let card = document.createElement("div");
 card.className="anime-card";
 
 card.innerHTML = `
 <img src="${image}">
 <h3>${name}</h3>
-<div class="episodes">
-<button onclick="openVideo('https://www.youtube.com/embed/dQw4w9WgXcQ')">Episode 1</button>
-</div>
+<select onchange="openVideo(this.value)">
+<option value="">Season 1</option>
+<option value="https://www.youtube.com/embed/dQw4w9WgXcQ">Episode 1</option>
+</select>
 `;
 
 container.appendChild(card);
