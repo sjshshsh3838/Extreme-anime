@@ -34,7 +34,7 @@ header{
 
 .container{
     display:grid;
-    grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+    grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
     gap:15px;
     padding:15px;
 }
@@ -43,7 +43,6 @@ header{
     background:#1c1c1c;
     border-radius:10px;
     overflow:hidden;
-    cursor:pointer;
     transition:0.3s;
 }
 
@@ -53,14 +52,52 @@ header{
 
 .anime-card img{
     width:100%;
-    height:200px;
+    height:220px;
     object-fit:cover;
 }
 
 .anime-card h3{
-    padding:10px;
-    font-size:16px;
     text-align:center;
+    padding:8px;
+}
+
+.episodes{
+    padding:10px;
+    display:flex;
+    flex-direction:column;
+    gap:5px;
+}
+
+.episodes button{
+    padding:6px;
+    background:#ff3c00;
+    border:none;
+    color:white;
+    border-radius:5px;
+    cursor:pointer;
+}
+
+#player{
+    display:none;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:black;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+}
+
+#player button{
+    padding:10px;
+    margin-bottom:10px;
+}
+
+iframe{
+    width:90%;
+    height:400px;
 }
 </style>
 </head>
@@ -74,27 +111,51 @@ header{
 
 <div class="container">
 
-<div class="anime-card" onclick="openVideo('https://www.youtube.com/embed/dQw4w9WgXcQ')">
-<img src="https://i.imgur.com/1.jpg">
+<!-- Naruto -->
+<div class="anime-card">
+<img src="https://upload.wikimedia.org/wikipedia/en/9/94/NarutoCoverTankobon1.jpg">
 <h3>Naruto</h3>
+<div class="episodes">
+<button onclick="openVideo('https://www.youtube.com/embed/dQw4w9WgXcQ')">Episode 1</button>
+<button onclick="openVideo('https://www.youtube.com/embed/dQw4w9WgXcQ')">Episode 2</button>
+</div>
 </div>
 
-<div class="anime-card" onclick="openVideo('https://www.youtube.com/embed/dQw4w9WgXcQ')">
-<img src="https://i.imgur.com/2.jpg">
+<!-- One Piece -->
+<div class="anime-card">
+<img src="https://upload.wikimedia.org/wikipedia/en/6/6f/One_Piece_Logo.svg">
 <h3>One Piece</h3>
+<div class="episodes">
+<button onclick="openVideo('https://www.youtube.com/embed/dQw4w9WgXcQ')">Episode 1</button>
+<button onclick="openVideo('https://www.youtube.com/embed/dQw4w9WgXcQ')">Episode 2</button>
+</div>
 </div>
 
-<div class="anime-card" onclick="openVideo('https://www.youtube.com/embed/dQw4w9WgXcQ')">
-<img src="https://i.imgur.com/3.jpg">
+<!-- Attack on Titan -->
+<div class="anime-card">
+<img src="https://upload.wikimedia.org/wikipedia/en/7/7a/Attack_on_Titan_cover.jpg">
 <h3>Attack on Titan</h3>
+<div class="episodes">
+<button onclick="openVideo('https://www.youtube.com/embed/dQw4w9WgXcQ')">Episode 1</button>
+<button onclick="openVideo('https://www.youtube.com/embed/dQw4w9WgXcQ')">Episode 2</button>
+</div>
 </div>
 
 </div>
 
 <!-- Video Player -->
-<div id="player" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:black; justify-content:center; align-items:center; flex-direction:column;">
-<button onclick="closePlayer()" style="padding:10px; margin-bottom:10px;">Close</button>
-<iframe id="videoFrame" width="90%" height="400px" frameborder="0" allowfullscreen></iframe>
+<div id="player">
+<button onclick="closePlayer()">Close</button>
+<iframe id="videoFrame" frameborder="0" allowfullscreen></iframe>
+</div>
+
+<hr>
+<h2 style="text-align:center;">Admin Panel</h2>
+
+<div style="text-align:center; padding:15px;">
+<input type="text" id="animeName" placeholder="Anime Name">
+<input type="text" id="animeImage" placeholder="Image URL">
+<button onclick="addAnime()">Add Anime</button>
 </div>
 
 <script>
@@ -113,10 +174,8 @@ const animeCards = document.querySelectorAll(".anime-card");
 
 searchInput.addEventListener("keyup", function(){
     const value = this.value.toLowerCase();
-
-    animeCards.forEach(function(card){
+    document.querySelectorAll(".anime-card").forEach(function(card){
         const title = card.querySelector("h3").innerText.toLowerCase();
-
         if(title.includes(value)){
             card.style.display="block";
         } else{
@@ -124,6 +183,26 @@ searchInput.addEventListener("keyup", function(){
         }
     });
 });
+
+function addAnime(){
+    const name = document.getElementById("animeName").value;
+    const image = document.getElementById("animeImage").value;
+
+    const container = document.querySelector(".container");
+
+    const card = document.createElement("div");
+    card.className="anime-card";
+
+    card.innerHTML = `
+    <img src="${image}">
+    <h3>${name}</h3>
+    <div class="episodes">
+    <button onclick="openVideo('https://www.youtube.com/embed/dQw4w9WgXcQ')">Episode 1</button>
+    </div>
+    `;
+
+    container.appendChild(card);
+}
 </script>
 
 </body>
