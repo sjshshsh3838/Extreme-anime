@@ -1,74 +1,60 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Extreme Anime</title>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Extreme Anime</title>
 
 <style>
 body{
 margin:0;
-font-family:Arial, sans-serif;
-background:#0f0f0f;
+font-family:Arial;
+background:#111;
 color:white;
 }
 
 header{
-background:black;
+background:#000;
 padding:15px;
-display:flex;
-justify-content:space-between;
-align-items:center;
-}
-
-.logo{
-color:#ff3c00;
+text-align:center;
 font-size:22px;
 font-weight:bold;
 }
 
-#searchInput{
+.search{
+text-align:center;
+margin:10px;
+}
+
+input{
 padding:8px;
-border:none;
-border-radius:6px;
+width:80%;
 }
 
 .container{
 display:grid;
-grid-template-columns:repeat(auto-fill,minmax(170px,1fr));
+grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
 gap:15px;
 padding:15px;
 }
 
-.anime-card{
-background:#1c1c1c;
-border-radius:12px;
+.card{
+background:#1b1b1b;
+border-radius:10px;
 overflow:hidden;
-padding-bottom:10px;
-transition:0.3s;
+cursor:pointer;
 }
 
-.anime-card:hover{
-transform:scale(1.05);
-}
-
-.anime-card img{
+.card img{
 width:100%;
-height:230px;
+height:200px;
 object-fit:cover;
 }
 
-.anime-card h3{
+.card h3{
+padding:10px;
+font-size:16px;
 text-align:center;
-margin:8px 0;
-}
-
-select{
-width:90%;
-margin:5px auto;
-display:block;
-padding:6px;
-border-radius:6px;
-border:none;
 }
 
 #player{
@@ -79,116 +65,122 @@ left:0;
 width:100%;
 height:100%;
 background:black;
-justify-content:center;
-align-items:center;
-flex-direction:column;
-z-index:1000;
+z-index:9999;
+}
+
+#player iframe{
+width:100%;
+height:250px;
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
 }
 
 #player button{
+position:absolute;
+top:20px;
+right:20px;
 padding:10px;
-margin-bottom:10px;
 }
 
-iframe{
-width:90%;
-height:400px;
-}
 .admin{
-text-align:center;
-padding:20px;
+background:#000;
+padding:15px;
+margin:15px;
+border-radius:10px;
 }
+
 .admin input{
-padding:6px;
-margin:5px;
-border-radius:6px;
-border:none;
-}
-.admin button{
-padding:6px 12px;
-background:#ff3c00;
-border:none;
-color:white;
-border-radius:6px;
-cursor:pointer;
+width:100%;
+margin:5px 0;
 }
 </style>
 </head>
 
 <body>
 
-<header>
-<div class="logo">Extreme Anime</div>
-<input type="text" id="searchInput" placeholder="Search anime...">
-</header>
+<header>🔥 Extreme Anime</header>
 
-<div class="container">
-
-<!-- Naruto -->
-<div class="anime-card">
-<img src="https://doubtful-lavender-j29a6socv3.edgeone.app/MV5BZTNjOWI0ZTAtOGY1OS00ZGU0LWEyOWYtMjhkYjdlYmVjMDk2XkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg">
-<h3>Naruto</h3>
-
-<select onchange="openVideo(this.value)">
-<option value="">Season 1</option>
-<option value="https://www.youtube.com/embed/dQw4w9WgXcQ">Episode 1</option>
-<option value="https://www.youtube.com/embed/dQw4w9WgXcQ">Episode 2</option>
-<option value="https://www.youtube.com/embed/dQw4w9WgXcQ">Episode 3</option>
-</select>
-
-<select onchange="openVideo(this.value)">
-<option value="">Season 2</option>
-<option value="https://www.youtube.com/embed/dQw4w9WgXcQ">Episode 1</option>
-<option value="https://www.youtube.com/embed/dQw4w9WgXcQ">Episode 2</option>
-</select>
+<div class="search">
+<input type="text" id="search" placeholder="Search anime..." onkeyup="searchAnime()">
 </div>
 
-<!-- One Piece -->
-<div class="anime-card">
-<img src="https://i.imgur.com/4AIb5oP.jpg">
-<h3>One Piece</h3>
-
-<select onchange="openVideo(this.value)">
-<option value="">Season 1</option>
-<option value="https://www.youtube.com/embed/dQw4w9WgXcQ">Episode 1</option>
-<option value="https://www.youtube.com/embed/dQw4w9WgXcQ">Episode 2</option>
-</select>
+<div class="admin">
+<h3>Admin Panel</h3>
+<input type="text" id="animeTitle" placeholder="Anime Title">
+<input type="text" id="animeImage" placeholder="Thumbnail Image Link">
+<input type="text" id="episodeName" placeholder="Episode Name">
+<input type="text" id="episodeLink" placeholder="YouTube Embed Link">
+<button onclick="addEpisode()">Add Episode</button>
 </div>
 
-<!-- Attack on Titan -->
-<div class="anime-card">
-<img src="https://i.imgur.com/kG6sX4Y.jpg">
-<h3>Attack on Titan</h3>
+<div class="container" id="animeList"></div>
 
-<select onchange="openVideo(this.value)">
-<option value="">Season 1</option>
-<option value="https://www.youtube.com/embed/dQw4w9WgXcQ">Episode 1</option>
-<option value="https://www.youtube.com/embed/dQw4w9WgXcQ">Episode 2</option>
-</select>
-</div>
-
-</div>
-
-<!-- Video Player -->
 <div id="player">
 <button onclick="closePlayer()">Close</button>
 <iframe id="videoFrame" frameborder="0" allowfullscreen></iframe>
 </div>
 
-<hr>
-
-<div class="admin">
-<h2>Admin Panel</h2>
-<input type="text" id="animeName" placeholder="Anime Name">
-<input type="text" id="animeImage" placeholder="Image URL">
-<button onclick="addAnime()">Add Anime</button>
-</div>
-
 <script>
-function openVideo(video){
-if(video==="") return;
-document.getElementById("player").style.display="flex";
-document.getElementById("videoFrame").src=video;
+
+let animeData = JSON.parse(localStorage.getItem("animeData")) || [];
+
+function saveData(){
+localStorage.setItem("animeData", JSON.stringify(animeData));
+}
+
+function addEpisode(){
+let title=document.getElementById("animeTitle").value;
+let image=document.getElementById("animeImage").value;
+let epName=document.getElementById("episodeName").value;
+let epLink=document.getElementById("episodeLink").value;
+
+if(title===""||image===""||epName===""||epLink===""){
+alert("Fill all fields");
+return;
+}
+
+let anime=animeData.find(a=>a.title===title);
+
+if(!anime){
+anime={title:title,image:image,episodes:[]};
+animeData.push(anime);
+}
+
+anime.episodes.push({name:epName,link:epLink});
+saveData();
+renderAnime();
+alert("Episode Added!");
+}
+
+function renderAnime(){
+let container=document.getElementById("animeList");
+container.innerHTML="";
+
+animeData.forEach(anime=>{
+let card=document.createElement("div");
+card.className="card";
+
+card.innerHTML=`
+<img src="${anime.image}">
+<h3>${anime.title}</h3>
+<select onchange="playEpisode(this)">
+<option value="">Select Episode</option>
+${anime.episodes.map(ep=>`<option value="${ep.link}">${ep.name}</option>`).join("")}
+</select>
+`;
+
+container.appendChild(card);
+});
+}
+
+function playEpisode(select){
+let link=select.value;
+if(link==="") return;
+
+document.getElementById("player").style.display="block";
+document.getElementById("videoFrame").src=link;
 }
 
 function closePlayer(){
@@ -196,37 +188,18 @@ document.getElementById("player").style.display="none";
 document.getElementById("videoFrame").src="";
 }
 
-document.getElementById("searchInput").addEventListener("keyup", function(){
-let value = this.value.toLowerCase();
-document.querySelectorAll(".anime-card").forEach(function(card){
-let title = card.querySelector("h3").innerText.toLowerCase();
-card.style.display = title.includes(value) ? "block" : "none";
-});
-});
+function searchAnime(){
+let input=document.getElementById("search").value.toLowerCase();
+let cards=document.getElementsByClassName("card");
 
-function addAnime(){
-let name = document.getElementById("animeName").value;
-let image = document.getElementById("animeImage").value;
-if(name==="" || image==="") return;
-
-let container = document.querySelector(".container");
-let card = document.createElement("div");
-card.className="anime-card";
-
-card.innerHTML = `
-<img src="${image}">
-<h3>${name}</h3>
-<select onchange="openVideo(this.value)">
-<option value="">Season 1</option>
-<option value="https://www.youtube.com/embed/dQw4w9WgXcQ">Episode 1</option>
-</select>
-`;
-
-container.appendChild(card);
-
-document.getElementById("animeName").value="";
-document.getElementById("animeImage").value="";
+for(let card of cards){
+let title=card.getElementsByTagName("h3")[0].innerText.toLowerCase();
+card.style.display=title.includes(input)?"block":"none";
 }
+}
+
+renderAnime();
+
 </script>
 
 </body>
