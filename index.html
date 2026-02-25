@@ -3,112 +3,128 @@
 <head>
 <title>Extreme Anime</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
-body{margin:0;background:#0f0f0f;color:white;font-family:Arial;}
-header{background:#141414;padding:15px;display:flex;justify-content:space-between;}
-.logo{color:#ff3c00;font-weight:bold;}
-input{padding:6px;border-radius:5px;border:none;}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:15px;padding:15px;}
-.card{background:#1c1c1c;border-radius:10px;padding:10px;text-align:center;cursor:pointer;}
-.player{position:fixed;top:0;left:0;width:100%;height:100%;background:black;display:none;justify-content:center;align-items:center;flex-direction:column;}
-.player iframe{width:95%;height:60%;}
-button{padding:8px 15px;margin-top:10px;}
+body{
+    margin:0;
+    font-family:Arial, sans-serif;
+    background:#111;
+    color:white;
+}
+
+header{
+    background:#000;
+    padding:15px;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.logo{
+    color:#ff3c00;
+    font-size:22px;
+    font-weight:bold;
+}
+
+#searchInput{
+    padding:8px;
+    border:none;
+    border-radius:5px;
+}
+
+.container{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+    gap:15px;
+    padding:15px;
+}
+
+.anime-card{
+    background:#1c1c1c;
+    border-radius:10px;
+    overflow:hidden;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.anime-card:hover{
+    transform:scale(1.05);
+}
+
+.anime-card img{
+    width:100%;
+    height:200px;
+    object-fit:cover;
+}
+
+.anime-card h3{
+    padding:10px;
+    font-size:16px;
+    text-align:center;
+}
 </style>
 </head>
 
 <body>
 
 <header>
-<div class="logo">🔥 Extreme Anime</div>
-<input type="text" id="search" placeholder="Search...">
+<div class="logo">Extreme Anime</div>
+<input type="text" id="searchInput" placeholder="Search anime...">
 </header>
 
-<div class="grid" id="animeList"></div>
+<div class="container">
 
-<div class="player" id="player">
-<iframe id="videoFrame" frameborder="0" allowfullscreen></iframe>
-<button onclick="closePlayer()">Close</button>
+<div class="anime-card" onclick="openVideo('https://www.youtube.com/embed/dQw4w9WgXcQ')">
+<img src="https://i.imgur.com/1.jpg">
+<h3>Naruto</h3>
+</div>
+
+<div class="anime-card" onclick="openVideo('https://www.youtube.com/embed/dQw4w9WgXcQ')">
+<img src="https://i.imgur.com/2.jpg">
+<h3>One Piece</h3>
+</div>
+
+<div class="anime-card" onclick="openVideo('https://www.youtube.com/embed/dQw4w9WgXcQ')">
+<img src="https://i.imgur.com/3.jpg">
+<h3>Attack on Titan</h3>
+</div>
+
+</div>
+
+<!-- Video Player -->
+<div id="player" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:black; justify-content:center; align-items:center; flex-direction:column;">
+<button onclick="closePlayer()" style="padding:10px; margin-bottom:10px;">Close</button>
+<iframe id="videoFrame" width="90%" height="400px" frameborder="0" allowfullscreen></iframe>
 </div>
 
 <script>
-
-const animeData = [
-{
-title:"Naruto",
-episodes:[
-"https://www.youtube.com/embed/dQw4w9WgXcQ",
-"https://www.youtube.com/embed/dQw4w9WgXcQ"
-]
-},
-{
-title:"Attack on Titan",
-episodes:[
-"https://www.youtube.com/embed/dQw4w9WgXcQ"
-]
-}
-];
-
-const container = document.getElementById("animeList");
-const searchInput = document.getElementById("search");
-
-function displayAnime(list){
-container.innerHTML="";
-list.forEach(anime=>{
-container.innerHTML += `
-<div class="card" onclick="openEpisodes('${anime.title}')">
-<h3>${anime.title}</h3>
-</div>`;
-});
-}
-
-displayAnime(animeData);
-
-searchInput.addEventListener("keyup",()=>{
-const value = searchInput.value.toLowerCase();
-const filtered = animeData.filter(a=>a.title.toLowerCase().includes(value));
-displayAnime(filtered);
-});
-
-function openEpisodes(title){
-const anime = animeData.find(a=>a.title===title);
-container.innerHTML="";
-anime.episodes.forEach((ep,index)=>{
-container.innerHTML += `
-<div class="card" onclick="openPlayer('${ep}')">
-<h3>Episode ${index+1}</h3>
-</div>`;
-});
-}
-
-function openPlayer(video){
-document.getElementById("player").style.display="flex";
-document.getElementById("videoFrame").src=video;
+function openVideo(video){
+    document.getElementById("player").style.display="flex";
+    document.getElementById("videoFrame").src=video;
 }
 
 function closePlayer(){
-document.getElementById("player").style.display="none";
-document.getElementById("videoFrame").src="";
+    document.getElementById("player").style.display="none";
+    document.getElementById("videoFrame").src="";
 }
 
-</script>
-
-</body>
-</html>
-<script>
 const searchInput = document.getElementById("searchInput");
 const animeCards = document.querySelectorAll(".anime-card");
 
-searchInput.addEventListener("keyup", function() {
+searchInput.addEventListener("keyup", function(){
     const value = this.value.toLowerCase();
 
-    animeCards.forEach(card => {
+    animeCards.forEach(function(card){
         const title = card.querySelector("h3").innerText.toLowerCase();
 
-        if (title.includes(value)) {
-            card.style.display = "block";
-        } else {
-            card.style.display = "none";
+        if(title.includes(value)){
+            card.style.display="block";
+        } else{
+            card.style.display="none";
         }
     });
 });
 </script>
+
+</body>
+</html>
