@@ -1,131 +1,121 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Extreme Anime - Admin</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin</title>
 
-  <style>
-    body{
-      margin:0;
-      background:#0f0f0f;
-      font-family:sans-serif;
-      color:white;
-      text-align:center;
-    }
-
-    h2{
-      margin-top:40px;
-      color:#ffcc00;
-    }
-
-    input{
-      width:80%;
-      padding:12px;
-      margin:10px 0;
-      border-radius:8px;
-      border:none;
-      font-size:16px;
-    }
-
-    button{
-      padding:12px 25px;
-      border:none;
-      border-radius:8px;
-      background:#ffcc00;
-      font-weight:bold;
-      cursor:pointer;
-    }
-
-    button:hover{
-      background:#ffaa00;
-    }
-
-    #panel{
-      margin-top:30px;
-      display:none;
-    }
-
-    .card{
-      background:#1a1a1a;
-      padding:20px;
-      border-radius:12px;
-      width:90%;
-      margin:auto;
-      box-shadow:0 0 15px rgba(255,204,0,0.2);
-    }
-  </style>
+<style>
+body{
+  margin:0;
+  background:#0f0f0f;
+  font-family:sans-serif;
+  color:white;
+  text-align:center;
+}
+input,select{
+  width:80%;
+  padding:10px;
+  margin:8px 0;
+  border-radius:8px;
+  border:none;
+}
+button{
+  padding:10px 20px;
+  border:none;
+  border-radius:8px;
+  background:#ffcc00;
+  font-weight:bold;
+  margin:5px;
+}
+.card{
+  background:#1a1a1a;
+  padding:15px;
+  border-radius:12px;
+  margin:10px;
+}
+</style>
 </head>
 
 <body>
 
-<h2>🔐 Admin Login</h2>
-
-<input type="password" id="pass" placeholder="Enter Admin Password">
-<br>
+<h2>Admin Login</h2>
+<input type="password" id="pass" placeholder="Password">
 <button onclick="login()">Login</button>
 
-<div id="panel">
-  <div class="card">
-    <h3>➕ Add New Anime</h3>
+<div id="panel" style="display:none">
 
-    <input id="title" placeholder="Anime Title"><br>
-    <input id="image" placeholder="Thumbnail Image Link"><br>
+<h3>Add Anime</h3>
+<input id="title" placeholder="Anime Title">
+<input id="image" placeholder="Thumbnail Link">
+<button onclick="addAnime()">Add Anime</button>
 
-    <button onclick="addAnime()">Add Anime</button>
-  </div>
+<h3>Add Episode</h3>
+<select id="animeSelect"></select>
+<input id="epName" placeholder="Episode Name (EP 1)">
+<input id="epLink" placeholder="Episode Video Link">
+<button onclick="addEpisode()">Add Episode</button>
+
 </div>
 
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getDatabase, ref, push } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import { getDatabase, ref, push, update, onValue } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyC_hLvrqWjOMkuYxLv3nYz2w_3K6-te5l8",
-  authDomain: "sohan-b3d3e.firebaseapp.com",
-  databaseURL: "https://sohan-b3d3e-default-rtdb.firebaseio.com",
-  projectId: "sohan-b3d3e",
-  storageBucket: "sohan-b3d3e.firebasestorage.app",
-  messagingSenderId: "30321240527",
-  appId: "1:30321240527:web:ff4e862bb31f1a8bcb8aba"
+  apiKey: "YOUR_KEY",
+  authDomain: "YOUR_DOMAIN",
+  databaseURL: "YOUR_DB_URL",
+  projectId: "YOUR_PROJECT",
+  storageBucket: "YOUR_BUCKET",
+  messagingSenderId: "YOUR_ID",
+  appId: "YOUR_APPID"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-// 🔐 CHANGE PASSWORD HERE
-const ADMIN_PASSWORD = "extreme123";
+const PASSWORD="extreme123";
 
-window.login = function(){
-  const input = document.getElementById("pass").value;
-
-  if(input === ADMIN_PASSWORD){
-    document.getElementById("panel").style.display = "block";
-    alert("Login Success ✅");
-  } else {
-    alert("Wrong Password ❌");
+window.login=function(){
+  if(document.getElementById("pass").value===PASSWORD){
+    document.getElementById("panel").style.display="block";
+  }else{
+    alert("Wrong Password");
   }
 }
 
-window.addAnime = function(){
+window.addAnime=function(){
+  const title=document.getElementById("title").value;
+  const image=document.getElementById("image").value;
 
-  const title = document.getElementById("title").value;
-  const image = document.getElementById("image").value;
-
-  if(title === "" || image === ""){
-    alert("Fill all fields ❌");
-    return;
-  }
-
-  push(ref(db, "anime/"), {
-    title: title,
-    image: image
+  const newRef=push(ref(db,"anime/"));
+  update(newRef,{
+    title:title,
+    image:image
   });
 
-  alert("Anime Added Successfully 🔥");
+  alert("Anime Added");
+}
 
-  document.getElementById("title").value = "";
-  document.getElementById("image").value = "";
+onValue(ref(db,"anime/"), snapshot=>{
+  const select=document.getElementById("animeSelect");
+  select.innerHTML="";
+  snapshot.forEach(child=>{
+    select.innerHTML+=`<option value="${child.key}">${child.val().title}</option>`;
+  });
+});
+
+window.addEpisode=function(){
+  const id=document.getElementById("animeSelect").value;
+  const name=document.getElementById("epName").value;
+  const link=document.getElementById("epLink").value;
+
+  update(ref(db,"anime/"+id+"/episodes/"),{
+    [name]:link
+  });
+
+  alert("Episode Added");
 }
 
 </script>
