@@ -1,8 +1,22 @@
-import {
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { 
   getDatabase, ref, push, onValue, remove, update 
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-const db = getDatabase();
+const firebaseConfig = {
+  apiKey: "YOUR_KEY",
+  authDomain: "YOUR_AUTH",
+  databaseURL: "https://YOUR_PROJECT.firebaseio.com",
+  projectId: "YOUR_ID",
+  storageBucket: "YOUR_BUCKET",
+  messagingSenderId: "YOUR_MSG_ID",
+  appId: "YOUR_APP_ID"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 const epRef = ref(db, "episodes");
 
 window.addEpisode = function() {
@@ -10,12 +24,7 @@ window.addEpisode = function() {
   const title = document.getElementById("epTitle").value;
   const video = document.getElementById("epVideo").value;
 
-  push(epRef, {
-    number: number,
-    title: title,
-    video: video
-  });
-
+  push(epRef, { number, title, video });
   alert("Episode Added!");
 }
 
@@ -26,9 +35,8 @@ onValue(epRef, (snapshot) => {
 
   for (let id in data) {
     container.innerHTML += `
-      <div style="margin:10px; padding:10px; background:#222;">
-        <b>EP ${data[id].number}</b> - ${data[id].title}
-        <br>
+      <div>
+        EP ${data[id].number} - ${data[id].title}
         <button onclick="editEpisode('${id}')">Edit</button>
         <button onclick="deleteEpisode('${id}')">Delete</button>
       </div>
@@ -42,8 +50,8 @@ window.deleteEpisode = function(id){
 
 window.editEpisode = function(id){
   const newTitle = prompt("New Title:");
-  const newNumber = prompt("New Episode Number:");
-  const newVideo = prompt("New Video Link:");
+  const newNumber = prompt("New Number:");
+  const newVideo = prompt("New Video:");
 
   update(ref(db, "episodes/" + id), {
     title: newTitle,
@@ -51,3 +59,5 @@ window.editEpisode = function(id){
     video: newVideo
   });
 }
+
+         </script>
