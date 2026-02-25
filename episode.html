@@ -1,18 +1,47 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Watch Episode</title>
-<style>
-body{background:black;color:white;text-align:center}
-iframe{width:90%;height:400px;margin-top:20px}
-</style>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Episodes</title>
 </head>
-<body>
+<body style="background:black;color:white">
 
-<h1>Anime Episode</h1>
+<h2>Episodes</h2>
+<div id="episodes"></div>
 
-<iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ"
-frameborder="0" allowfullscreen></iframe>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const urlParams=new URLSearchParams(window.location.search);
+const id=urlParams.get("id");
+
+const firebaseConfig={
+apiKey:"YOUR_KEY",
+authDomain:"YOUR_AUTH",
+databaseURL:"YOUR_DB_URL",
+projectId:"YOUR_ID",
+storageBucket:"YOUR_BUCKET",
+messagingSenderId:"YOUR_MSG",
+appId:"YOUR_APP_ID"
+};
+
+const app=initializeApp(firebaseConfig);
+const db=getDatabase(app);
+
+onValue(ref(db,"episodes/"+id),(snapshot)=>{
+const data=snapshot.val();
+const container=document.getElementById("episodes");
+container.innerHTML="";
+if(data){
+for(let ep in data){
+container.innerHTML+=`
+<p>EP ${data[ep].number} - 
+<a href="${data[ep].video}" target="_blank">Watch</a></p>`;
+}
+}
+});
+</script>
 
 </body>
 </html>
