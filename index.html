@@ -1,95 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Premium Anime Website</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial;
+  background:#0f172a;
+  color:white;
+}
+header{
+  background:linear-gradient(90deg,#9333ea,#6366f1);
+  padding:15px;
+  text-align:center;
+  font-size:22px;
+  font-weight:bold;
+}
+.container{
+  padding:15px;
+}
+.card{
+  background:#1e293b;
+  padding:15px;
+  margin-bottom:15px;
+  border-radius:15px;
+  box-shadow:0 0 10px rgba(0,0,0,0.5);
+}
+button{
+  padding:8px 12px;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  margin-top:5px;
+}
+.addBtn{background:#22c55e;color:white;}
+.deleteBtn{background:#ef4444;color:white;}
+select{
+  padding:6px;
+  border-radius:6px;
+  margin-top:5px;
+}
+input{
+  width:100%;
+  padding:8px;
+  margin-bottom:8px;
+  border-radius:8px;
+  border:none;
+}
+iframe{
+  width:100%;
+  height:200px;
+  border-radius:10px;
+  margin-top:10px;
+}
+</style>
+</head>
+
+<body>
+
+<header>🔥 Premium Anime Website</header>
+
+<div class="container">
+
+<h3>Add Anime</h3>
+<input type="text" id="title" placeholder="Anime Title">
+<input type="text" id="episodes" placeholder="Episode Links (comma separated)">
+<button class="addBtn" onclick="addAnime()">Add Anime</button>
+
+<hr>
+
+<div id="animeList"></div>
+
+</div>
+
 <script type="module">
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } 
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc }
 from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-/* 🔥 YOUR REAL FIREBASE CONFIG */
 const firebaseConfig = {
   apiKey: "AIzaSyC_hLvrqWjOMkuYxLv3nYz2w_3K6-te5l8",
   authDomain: "sohan-b3d3e.firebaseapp.com",
-  projectId: "sohan-b3d3e",
-  storageBucket: "sohan-b3d3e.firebasestorage.app",
-  messagingSenderId: "30321240527",
-  appId: "1:30321240527:web:ff4e862bb31f1a8bcb8aba",
-  measurementId: "G-NVNSRLQ3J7"
+  projectId: "sohan-b3d3e"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-/* ADD EPISODE */
-window.addEpisode = async function(){
-let title=document.getElementById("title").value;
-let image=document.getElementById("image").value;
-let epname=document.getElementById("epname").value;
-let eplink=document.getElementById("eplink").value;
+window.addAnime = async function(){
 
-if(!title||!image||!epname||!eplink){
-alert("Fill all fields");
-return;
+  let title=document.getElementById("title").value;
+  let episodes=document.getElementById("episodes").value.split(",");
+
+  if(title=="" || episodes==""){
+    alert("Fill all fields");
+    return;
+  }
+
+  await addDoc(collection(db,"anime"),{
+    title:title,
+    episodes:episodes
+  });
+
+  document.getElementById("title").value="";
+  document.getElementById("episodes").value="";
+
+  loadAnime();
 }
 
-await addDoc(collection(db,"anime"),{
-title,image,epname,eplink
-});
-
-alert("Episode Added!");
-location.reload();
-}
-
-/* LOAD ANIME */
 async function loadAnime(){
-const querySnapshot = await getDocs(collection(db,"anime"));
-let container=document.getElementById("animeList");
-container.innerHTML="";
+  const querySnapshot=await getDocs(collection(db,"anime"));
+  let container=document.getElementById("animeList");
+  container.innerHTML="";
 
-querySnapshot.forEach(documentSnapshot=>{
-let data=documentSnapshot.data();
-let id=documentSnapshot.id;
+  querySnapshot.forEach(docSnap=>{
+    let data=docSnap.data();
+    let id=docSnap.id;
 
-let card=document.createElement("div");
-card.className="card";
+    let div=document.createElement("div");
+    div.className="card";
 
-card.innerHTML=`
-<img src="${data.image}">
-<h3>${data.title}</h3>
+    let episodeOptions="";
+    data.episodes.forEach((ep,index)=>{
+      episodeOptions+=`<option value="${ep}">Episode ${index+1}</option>`;
+    });
 
-<select onchange="playVideo(this)">
-<option value="">Select Episode</option>
-<option value="${data.eplink}">${data.epname}</option>
-</select>
+    div.innerHTML=`
+      <h3>${data.title}</h3>
+      <select onchange="playEpisode(this.value)">
+        <option>Select Episode</option>
+        ${episodeOptions}
+      </select>
+      <iframe></iframe>
+      <br>
+      <button class="deleteBtn" onclick="deleteAnime('${id}')">Delete</button>
+    `;
 
-<button class="delete" onclick="deleteAnime('${id}')">Delete</button>
-`;
-
-container.appendChild(card);
-});
+    container.appendChild(div);
+  });
 }
 
-/* DELETE */
+window.playEpisode=function(link){
+  let iframe=event.target.parentElement.querySelector("iframe");
+  iframe.src=link;
+}
+
 window.deleteAnime=async function(id){
-if(confirm("Delete this anime?")){
-await deleteDoc(doc(db,"anime",id));
-alert("Deleted!");
-location.reload();
-}
-}
-
-/* VIDEO PLAYER */
-window.playVideo=function(select){
-let link=select.value;
-if(!link)return;
-
-document.getElementById("player").style.display="block";
-document.getElementById("videoFrame").src=link;
-}
-
-window.closePlayer=function(){
-document.getElementById("player").style.display="none";
-document.getElementById("videoFrame").src="";
+  await deleteDoc(doc(db,"anime",id));
+  loadAnime();
 }
 
 loadAnime();
 
 </script>
+
+</body>
+</html>
