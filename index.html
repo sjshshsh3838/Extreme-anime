@@ -1,60 +1,66 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Anime Admin</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Extreme Anime</title>
+<style>
+body{margin:0;background:#0f0f0f;color:white;font-family:sans-serif}
+.header{display:flex;justify-content:space-between;padding:15px;background:#111}
+.logo{color:#f5c518;font-weight:bold;font-size:22px}
+.hero{height:250px;background:#222;display:flex;align-items:end;padding:20px}
+.btn{background:#f5c518;color:black;padding:8px 15px;border-radius:20px;text-decoration:none}
+.section{padding:15px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.card img{width:100%;border-radius:10px}
+.card p{text-align:center;font-size:14px}
+</style>
 </head>
 <body>
 
-<h2>Add Episode</h2>
+<div class="header">
+<div class="logo">Extreme Anime</div>
+<a href="admin.html" style="color:white">Admin</a>
+</div>
 
-<input id="epNumber" placeholder="Episode Number"><br><br>
-<input id="epTitle" placeholder="Episode Title"><br><br>
-<input id="epVideo" placeholder="Video Link"><br><br>
-<button onclick="addEpisode()">Add Episode</button>
-
-<h3>Episodes</h3>
-<div id="episodeList"></div>
+<div class="section">
+<h3>Latest Anime</h3>
+<div class="grid" id="animeList"></div>
+</div>
 
 <script type="module">
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
 const firebaseConfig = {
-  apiKey: "PASTE_YOUR_KEY",
-  authDomain: "PASTE_YOUR_AUTH",
-  databaseURL: "PASTE_YOUR_DB_URL",
-  projectId: "PASTE_YOUR_ID",
-  storageBucket: "PASTE_YOUR_BUCKET",
-  messagingSenderId: "PASTE_YOUR_MSG",
-  appId: "PASTE_YOUR_APP_ID"
+  apiKey: "YOUR_KEY",
+  authDomain: "YOUR_AUTH",
+  databaseURL: "YOUR_DB_URL",
+  projectId: "YOUR_ID",
+  storageBucket: "YOUR_BUCKET",
+  messagingSenderId: "YOUR_MSG",
+  appId: "YOUR_APP_ID"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
-const epRef = ref(db, "episodes");
+const animeRef = ref(db,"anime");
 
-window.addEpisode = function() {
-  const number = document.getElementById("epNumber").value;
-  const title = document.getElementById("epTitle").value;
-  const video = document.getElementById("epVideo").value;
-
-  push(epRef, { number, title, video });
-  alert("Added!");
+onValue(animeRef,(snapshot)=>{
+const data = snapshot.val();
+const container = document.getElementById("animeList");
+container.innerHTML="";
+if(data){
+for(let id in data){
+container.innerHTML += `
+<div class="card">
+<a href="episode.html?id=${id}">
+<img src="${data[id].image}">
+<p>${data[id].title}</p>
+</a>
+</div>`;
 }
-
-onValue(epRef, (snapshot) => {
-  const data = snapshot.val();
-  const container = document.getElementById("episodeList");
-  container.innerHTML = "";
-
-  if(data){
-    for (let id in data) {
-      container.innerHTML += `<p>EP ${data[id].number} - ${data[id].title}</p>`;
-    }
-  }
+}
 });
-
 </script>
 
 </body>
