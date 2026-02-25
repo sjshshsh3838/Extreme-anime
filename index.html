@@ -4,61 +4,102 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Extreme Anime</title>
 
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
 <style>
-body{
+
+*{
   margin:0;
-  background:#0f0f0f;
-  font-family:sans-serif;
-  color:white;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Poppins',sans-serif;
 }
+
+body{
+  background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);
+  color:white;
+  min-height:100vh;
+}
+
 header{
   display:flex;
   justify-content:space-between;
-  padding:15px;
-  background:#000;
+  align-items:center;
+  padding:20px;
+  background:rgba(0,0,0,0.5);
+  backdrop-filter:blur(10px);
+  position:sticky;
+  top:0;
 }
+
 .logo{
-  color:#ffcc00;
-  font-size:22px;
-  font-weight:bold;
+  font-size:26px;
+  font-weight:700;
+  background:linear-gradient(90deg,#ffcc00,#ff6600);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
 }
-a{
+
+header a{
   color:white;
   text-decoration:none;
+  font-weight:600;
 }
+
 .container{
-  padding:15px;
+  padding:20px;
 }
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(250px,1fr));
+  gap:20px;
+}
+
 .card{
-  background:#1a1a1a;
-  border-radius:12px;
-  padding:10px;
-  margin-bottom:15px;
+  background:rgba(255,255,255,0.05);
+  backdrop-filter:blur(15px);
+  border-radius:20px;
+  padding:15px;
+  transition:0.3s;
+  box-shadow:0 0 20px rgba(0,0,0,0.3);
 }
+
+.card:hover{
+  transform:translateY(-8px);
+  box-shadow:0 0 25px rgba(255,204,0,0.4);
+}
+
 .card img{
   width:100%;
-  border-radius:10px;
+  border-radius:15px;
+  height:300px;
+  object-fit:cover;
 }
-button{
-  padding:8px 15px;
-  border:none;
-  border-radius:8px;
-  background:#ffcc00;
-  font-weight:bold;
-  margin-top:5px;
+
+.card h3{
+  margin-top:10px;
+  font-weight:600;
 }
+
 select{
   width:100%;
-  padding:8px;
-  border-radius:6px;
-  margin-top:5px;
+  padding:10px;
+  border-radius:10px;
+  margin-top:10px;
+  border:none;
+  background:#111;
+  color:white;
 }
+
 iframe{
   width:100%;
-  height:220px;
+  height:200px;
+  border-radius:15px;
   margin-top:10px;
-  border-radius:10px;
+  border:none;
 }
+
 </style>
 </head>
 
@@ -70,8 +111,8 @@ iframe{
 </header>
 
 <div class="container">
-<h2>Latest Anime</h2>
-<div id="animeList"></div>
+  <h2 style="margin-bottom:20px;">Latest Anime</h2>
+  <div class="grid" id="animeList"></div>
 </div>
 
 <script type="module">
@@ -97,13 +138,12 @@ const animeList = document.getElementById("animeList");
 onValue(ref(db,"anime/"), snapshot=>{
   animeList.innerHTML="";
   snapshot.forEach(child=>{
-    const data = child.val();
-    const key = child.key;
+    const data=child.val();
 
-    let epOptions="";
+    let episodes="";
     if(data.episodes){
       Object.keys(data.episodes).forEach(ep=>{
-        epOptions+=`<option value="${data.episodes[ep]}">${ep}</option>`;
+        episodes+=`<option value="${data.episodes[ep]}">${ep}</option>`;
       });
     }
 
@@ -111,21 +151,19 @@ onValue(ref(db,"anime/"), snapshot=>{
       <div class="card">
         <img src="${data.image}">
         <h3>${data.title}</h3>
-
         <select onchange="playVideo(this)">
           <option>Select Episode</option>
-          ${epOptions}
+          ${episodes}
         </select>
-
         <iframe></iframe>
       </div>
     `;
   });
 });
 
-window.playVideo = function(select){
-  const iframe = select.parentElement.querySelector("iframe");
-  iframe.src = select.value;
+window.playVideo=function(select){
+  const iframe=select.parentElement.querySelector("iframe");
+  iframe.src=select.value;
 }
 
 </script>
